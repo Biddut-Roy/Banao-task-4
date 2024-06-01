@@ -16,14 +16,16 @@ exports.fetchCryptoPrice = void 0;
 const axios_1 = __importDefault(require("axios"));
 const cache_1 = require("../utils/cache");
 const config_1 = __importDefault(require("../app/config"));
-const fetchCryptoPrice = (symbol) => __awaiter(void 0, void 0, void 0, function* () {
-    const cachedPrice = yield (0, cache_1.getCache)(symbol);
+const COINPAPRIKA_API_URL = config_1.default.coin_api;
+const fetchCryptoPrice = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+    const cachedPrice = yield (0, cache_1.getCache)(coinId);
     if (cachedPrice) {
         return parseFloat(cachedPrice);
     }
-    const response = yield axios_1.default.get(`${config_1.default.coin_api}?ids=${symbol}&vs_currencies=usd`);
-    const price = response.data[symbol].usd;
-    yield (0, cache_1.setCache)(symbol, price.toString(), 60); // Cache for 60 seconds
+    const response = yield axios_1.default.get(`${COINPAPRIKA_API_URL}/tickers/${coinId}`);
+    const price = response.data.quotes.USD.price;
+    console.log(price);
+    yield (0, cache_1.setCache)(coinId, price.toString(), 60);
     return price;
 });
 exports.fetchCryptoPrice = fetchCryptoPrice;

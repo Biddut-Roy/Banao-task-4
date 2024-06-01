@@ -16,8 +16,8 @@ exports.checkAlerts = exports.createAlert = void 0;
 const Alert_1 = __importDefault(require("../models/Alert"));
 const cryptoService_1 = require("../services/cryptoService");
 const createAlert = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId, symbol, targetPrice, direction } = req.body;
-    const alert = new Alert_1.default({ userId, symbol, targetPrice, direction });
+    const { id, symbol, targetPrice, direction } = req.body;
+    const alert = new Alert_1.default({ id, symbol, targetPrice, direction });
     yield alert.save();
     res.status(201).send(alert);
 });
@@ -25,13 +25,13 @@ exports.createAlert = createAlert;
 const checkAlerts = () => __awaiter(void 0, void 0, void 0, function* () {
     const alerts = yield Alert_1.default.find({ notified: false });
     for (const alert of alerts) {
-        const currentPrice = yield (0, cryptoService_1.fetchCryptoPrice)(alert.symbol);
+        const currentPrice = yield (0, cryptoService_1.fetchCryptoPrice)(alert.id);
         if ((alert.direction === 'above' && currentPrice > alert.targetPrice) ||
             (alert.direction === 'below' && currentPrice < alert.targetPrice)) {
             // Notify the user (this could be via email, SMS, etc.)
             alert.notified = true;
             yield alert.save();
-            console.log(`Alert triggered for ${alert.userId}: ${alert.symbol} is ${alert.direction} ${alert.targetPrice}`);
+            console.log(`Alert triggered for ${alert.id}: ${alert.symbol} is  ${alert.targetPrice} and current prices ${currentPrice}`);
         }
     }
 });

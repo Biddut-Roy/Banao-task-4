@@ -21,7 +21,7 @@ const checkAlerts = async () => {
       alert.notified = true;
       await alert.save();
       console.log(
-        `Alert triggered for ${alert.id}: ${alert.symbol} is  ${alert.targetPrice}`,
+        `Alert triggered for ${alert.id}: ${alert.symbol} is  ${alert.targetPrice} and current prices ${currentPrice}`,
       );
     }
   }

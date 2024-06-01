@@ -19,7 +19,7 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.post('/alerts', alertController_1.createAlert);
-setInterval(alertController_1.checkAlerts, 60000);
+setInterval(alertController_1.checkAlerts, 60);
 app.use('/crypto', crypto_route_1.cryptoRoute);
 app.get('/', (req, res) => {
     res.send('server is starting');
