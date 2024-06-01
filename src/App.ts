@@ -19,7 +19,7 @@ app.use(express.json());
 
 app.post('/alerts', createAlert);
 
-setInterval(checkAlerts, 60000);
+setInterval(checkAlerts, 60);
 
 app.use('/crypto', cryptoRoute);
 

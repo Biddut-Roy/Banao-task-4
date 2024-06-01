@@ -19,21 +19,3 @@ const fetchCryptoPrice = async (coinId: string): Promise<number> => {
 };
 
 export { fetchCryptoPrice };
-
-// import axios from 'axios';
-
-// const COINPAPRIKA_API_URL = config.coin_api;
-
-// const fetchCryptoPrice = async (coinId: string) => {
-//   try {
-//     const response = await axios.get(
-//       `${COINPAPRIKA_API_URL}/tickers/${coinId}`,
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error fetching crypto price:', error);
-//     throw new Error('Failed to fetch crypto price');
-//   }
-// };
-
-// export { fetchCryptoPrice };
