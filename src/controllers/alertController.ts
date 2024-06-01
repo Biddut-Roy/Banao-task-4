@@ -1,30 +1,32 @@
-import { Request, Response } from 'express';
-import Alert from '../models/alert';
-import { fetchCryptoPrice } from '../services/cryptoService';
+import { getCachedPrice } from '../utils/cache';
 
-const createAlert = async (req: Request, res: Response) => {
-  const { userId, symbol, targetPrice, direction } = req.body;
-  const alert = new Alert({ userId, symbol, targetPrice, direction });
-  await alert.save();
-  res.status(201).send(alert);
-};
+class Alert {
+  coinId: string;
+  targetPrice: number;
+  direction: 'above' | 'below';
 
-const checkAlerts = async () => {
-  const alerts = await Alert.find({ notified: false });
-  for (const alert of alerts) {
-    const currentPrice = await fetchCryptoPrice(alert.symbol);
-    if (
-      (alert.direction === 'above' && currentPrice > alert.targetPrice) ||
-      (alert.direction === 'below' && currentPrice < alert.targetPrice)
-    ) {
-      // Notify the user (this could be via email, SMS, etc.)
-      alert.notified = true;
-      await alert.save();
+  constructor(
+    coinId: string,
+    targetPrice: number,
+    direction: 'above' | 'below' = 'above',
+  ) {
+    this.coinId = coinId;
+    this.targetPrice = targetPrice;
+    this.direction = direction;
+  }
+
+  async checkAlert(): Promise<void> {
+    const currentPrice = await getCachedPrice(this.coinId);
+    if (this.direction === 'above' && currentPrice >= this.targetPrice) {
       console.log(
-        `Alert triggered for ${alert.userId}: ${alert.symbol} is ${alert.direction} ${alert.targetPrice}`,
+        `Alert: ${this.coinId} price is above ${this.targetPrice}: $${currentPrice}`,
+      );
+    } else if (this.direction === 'below' && currentPrice <= this.targetPrice) {
+      console.log(
+        `Alert: ${this.coinId} price is below ${this.targetPrice}: $${currentPrice}`,
       );
     }
   }
-};
+}
 
-export { createAlert, checkAlerts };
+export { Alert };
