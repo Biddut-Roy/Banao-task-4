@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { createAlert, checkAlerts } from './controllers/alertController';
 import { fetchCryptoPrice } from './services/cryptoService';
 import axios from 'axios';
+import { cryptoRoute } from './app/cryptocurrency/crypto.route';
 
 dotenv.config();
 
@@ -16,15 +17,7 @@ app.use(express.json());
 
 app.post('/alerts', createAlert);
 
-app.get('/data', async (req, res) => {
-  try {
-    const response = await axios.get('https://api.coinpaprika.com/v1/tickers');
-    res.send(response.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching data');
-  }
-});
+app.use('/crypto,', cryptoRoute);
 
 setInterval(checkAlerts, 60000);
 
