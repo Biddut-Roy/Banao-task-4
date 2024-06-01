@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { RequestHandler } from 'express';
 
-export const getData: RequestHandler = async (req, res) => {
+const getData: RequestHandler = async (req, res) => {
   const { id } = req.params;
   try {
     let response;
@@ -17,4 +17,8 @@ export const getData: RequestHandler = async (req, res) => {
     console.error(error);
     res.status(500).send('Error fetching data');
   }
+};
+
+export const cryptoController = {
+  getData,
 };
