@@ -1,20 +1,39 @@
 import axios from 'axios';
 import { getCache, setCache } from '../utils/cache';
 import config from '../app/config';
+const COINPAPRIKA_API_URL = config.coin_api;
 
-const fetchCryptoPrice = async (symbol: string): Promise<number> => {
-  const cachedPrice = await getCache(symbol);
+const fetchCryptoPrice = async (coinId: string): Promise<number> => {
+  const cachedPrice = await getCache(coinId);
   if (cachedPrice) {
     return parseFloat(cachedPrice);
   }
 
-  const response = await axios.get(
-    `${config.coin_api}?ids=${symbol}&vs_currencies=usd`,
-  );
-  const price = response.data[symbol].usd;
+  const response = await axios.get(`${COINPAPRIKA_API_URL}/tickers/${coinId}`);
+  const price = response.data.quotes.USD.price;
 
-  await setCache(symbol, price.toString(), 60); // Cache for 60 seconds
+  console.log(price);
+
+  await setCache(coinId, price.toString(), 60);
   return price;
 };
 
 export { fetchCryptoPrice };
+
+// import axios from 'axios';
+
+// const COINPAPRIKA_API_URL = config.coin_api;
+
+// const fetchCryptoPrice = async (coinId: string) => {
+//   try {
+//     const response = await axios.get(
+//       `${COINPAPRIKA_API_URL}/tickers/${coinId}`,
+//     );
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error fetching crypto price:', error);
+//     throw new Error('Failed to fetch crypto price');
+//   }
+// };
+
+// export { fetchCryptoPrice };

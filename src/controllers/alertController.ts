@@ -3,8 +3,8 @@ import Alert from '../models/Alert';
 import { fetchCryptoPrice } from '../services/cryptoService';
 
 const createAlert = async (req: Request, res: Response) => {
-  const { userId, symbol, targetPrice, direction } = req.body;
-  const alert = new Alert({ userId, symbol, targetPrice, direction });
+  const { id, symbol, targetPrice, direction } = req.body;
+  const alert = new Alert({ id, symbol, targetPrice, direction });
   await alert.save();
   res.status(201).send(alert);
 };
@@ -12,7 +12,7 @@ const createAlert = async (req: Request, res: Response) => {
 const checkAlerts = async () => {
   const alerts = await Alert.find({ notified: false });
   for (const alert of alerts) {
-    const currentPrice = await fetchCryptoPrice(alert.symbol);
+    const currentPrice = await fetchCryptoPrice(alert.id);
     if (
       (alert.direction === 'above' && currentPrice > alert.targetPrice) ||
       (alert.direction === 'below' && currentPrice < alert.targetPrice)
@@ -21,7 +21,7 @@ const checkAlerts = async () => {
       alert.notified = true;
       await alert.save();
       console.log(
-        `Alert triggered for ${alert.userId}: ${alert.symbol} is ${alert.direction} ${alert.targetPrice}`,
+        `Alert triggered for ${alert.id}: ${alert.symbol} is ${alert.direction} ${alert.targetPrice}`,
       );
     }
   }
