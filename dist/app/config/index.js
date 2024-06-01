@@ -8,5 +8,7 @@ const path_1 = __importDefault(require("path"));
 dotenv_1.default.config({ path: path_1.default.join(process.cwd(), '.env') });
 exports.default = {
     port: process.env.PORT || 5000,
-    database_url: process.env.DB
+    database_url: process.env.DB,
+    coin_api: process.env.COINPAPRIKA_API_URL,
+    redis_url: process.env.REDIS_URL,
 };

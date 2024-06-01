@@ -12,20 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = __importDefault(require("./app/config"));
-const App_1 = __importDefault(require("./App"));
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield mongoose_1.default.connect(config_1.default.database_url);
-            App_1.default.listen(config_1.default.port, () => {
-                console.log(`Example app listening on port ${config_1.default.port}`);
-            });
-        }
-        catch (error) {
-            console.log(error);
-        }
-    });
-}
-main();
+exports.fetchCryptoPrice = void 0;
+const axios_1 = __importDefault(require("axios"));
+const cache_1 = require("../utils/cache");
+const config_1 = __importDefault(require("../app/config"));
+const fetchCryptoPrice = (symbol) => __awaiter(void 0, void 0, void 0, function* () {
+    const cachedPrice = yield (0, cache_1.getCache)(symbol);
+    if (cachedPrice) {
+        return parseFloat(cachedPrice);
+    }
+    const response = yield axios_1.default.get(`${config_1.default.coin_api}?ids=${symbol}&vs_currencies=usd`);
+    const price = response.data[symbol].usd;
+    yield (0, cache_1.setCache)(symbol, price.toString(), 60); // Cache for 60 seconds
+    return price;
+});
+exports.fetchCryptoPrice = fetchCryptoPrice;

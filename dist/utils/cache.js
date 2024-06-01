@@ -12,20 +12,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = __importDefault(require("./app/config"));
-const App_1 = __importDefault(require("./App"));
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield mongoose_1.default.connect(config_1.default.database_url);
-            App_1.default.listen(config_1.default.port, () => {
-                console.log(`Example app listening on port ${config_1.default.port}`);
-            });
-        }
-        catch (error) {
-            console.log(error);
-        }
-    });
-}
-main();
+exports.setCache = exports.getCache = void 0;
+const ioredis_1 = __importDefault(require("ioredis"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const redis = new ioredis_1.default(process.env.REDIS_URL || 'redis://localhost:6379');
+redis.on('error', (err) => {
+    console.error('Redis error:', err);
+});
+const getCache = (key) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return yield redis.get(key);
+    }
+    catch (err) {
+        console.error('Error getting cache:', err);
+        return null;
+    }
+});
+exports.getCache = getCache;
+const setCache = (key, value, ttl) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield redis.set(key, value, 'EX', ttl);
+    }
+    catch (err) {
+        console.error('Error setting cache:', err);
+    }
+});
+exports.setCache = setCache;

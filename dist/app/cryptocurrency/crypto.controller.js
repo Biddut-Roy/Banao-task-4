@@ -12,20 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = __importDefault(require("./app/config"));
-const App_1 = __importDefault(require("./App"));
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield mongoose_1.default.connect(config_1.default.database_url);
-            App_1.default.listen(config_1.default.port, () => {
-                console.log(`Example app listening on port ${config_1.default.port}`);
-            });
+exports.cryptoController = void 0;
+const axios_1 = __importDefault(require("axios"));
+const getData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        let response;
+        if (id) {
+            response = yield axios_1.default.get(`https://api.coinpaprika.com/v1/tickers/${id}`);
         }
-        catch (error) {
-            console.log(error);
+        else {
+            response = yield axios_1.default.get(`https://api.coinpaprika.com/v1/tickers`);
         }
-    });
-}
-main();
+        res.send(response.data);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching data');
+    }
+});
+exports.cryptoController = {
+    getData,
+};
